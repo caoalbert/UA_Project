@@ -31,6 +31,11 @@ percentile_95_od<- flights %>%
   summarise(percentile_95 = quantile(arrival_delay, 0.95, na.rm=T)) %>%
   filter(!str_starts(od,'\\d'))
 
+# create 95%-tile data frame to define delay by arrival airport
+percentile_95_vol<- flights %>%
+  group_by(destination_airport) %>%
+  summarise(percentile_95 = quantile(arrival_delay, 0.95, na.rm=T)) %>%
+  filter(!str_starts(destination_airport,'\\d'))
 
 
 # delay across airlines in the year
@@ -61,7 +66,6 @@ delay_state<- flights %>%
   summarise(average_delay = mean(delay_bool, na.rm = T))
 
 # by od
-
 delay_od<- flights %>%
   mutate(od = ifelse(origin_airport>destination_airport, 
                      paste0(destination_airport, origin_airport), 
@@ -81,6 +85,16 @@ delay_od<- flights %>%
 write.csv(delay_od, "data/delay_od.csv")
 
 
+# by volume
+delay_volume<- flights %>%
+  right_join(percentile_95_vol, 'destination_airport') %>%
+  mutate(delay_bool = ifelse((arrival_delay>15)&(arrival_delay<percentile_95),1,0)) %>%
+  group_by(destination_airport) %>%
+  summarise(num_flights = n(), average_delay = mean(delay_bool, na.rm = T))
+
+cor(delay_volume$num_flights, delay_volume$average_delay)
 
 
-
+a<- delay_volume %>%
+  filter((num_flights >= 10000)&(num_flights<=80000))
+cor(a$num_flights, a$average_delay)

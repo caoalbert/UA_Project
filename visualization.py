@@ -17,6 +17,7 @@ r['source']('file1.R')
 monthly_delay = rpy2py(r.monthly_delay)
 monthly_delay_type = rpy2py(r.monthly_delay_type)
 delay_state = rpy2py(r.delay_state)
+delay_volume = rpy2py(r.delay_volume)
 
 
 color = {'AA':'#14ACDC', 'DL':'#C01933', 'UA':'#0f1f37', 'AS':'#44ABC3', 'B6':'#0b51a0',
@@ -67,3 +68,13 @@ shape.plot(ax=ax,column='average_delay_std',
            legend_kwds={'label':'Normalized Delay'})
 plt.show()
 
+
+
+# Fig3: delay by volume flights
+p = sns.scatterplot(x=delay_volume['num_flights'], y=delay_volume['average_delay'])
+p.set(title='Percent Delay vs Traffic Volume',
+      xlabel='Volume (# of flights in 2015)',
+      ylabel='Percent Delay',
+      xticks=np.arange(0,300000,20000),
+      yticks=np.arange(0,0.55,0.05))
+plt.show()
