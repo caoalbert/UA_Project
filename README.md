@@ -6,4 +6,4 @@
 
 ## Shiny App
 
-[ShinyApp](caoalbert.shinyapps.io/top_delay_od/): a shinyapp was created to visualize routes that are most severely affected by delay
+[ShinyApp](https://caoalbert.shinyapps.io/top_delay_od/): a shinyapp was created to visualize routes that are most severely affected by delay
