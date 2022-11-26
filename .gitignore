@@ -1,1 +1,3 @@
 *.csv
+rsconnect/
+.DS_Store

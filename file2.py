@@ -1,18 +1,22 @@
 import pandas as pd
 import numpy as np
+from scipy.stats import zscore
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import seaborn as sns
+import geopandas as gpd
 import rpy2.robjects as robjects
 from rpy2.robjects.pandas2ri import rpy2py
-import matplotlib.pyplot as plt
-import seaborn as sns
 import locale
 locale.setlocale(locale.LC_ALL, 'EN_US')
 import calendar
 
-# Import cleaned dataframes
+# import cleaned dataframes
 r = robjects.r
 r['source']('file1.R')
 monthly_delay = rpy2py(r.monthly_delay)
 monthly_delay_type = rpy2py(r.monthly_delay_type)
+delay_state = rpy2py(r.delay_state)
 
 
 color = {'AA':'#14ACDC', 'DL':'#C01933', 'UA':'#0f1f37', 'AS':'#44ABC3', 'B6':'#0b51a0',
@@ -49,3 +53,17 @@ ax.set(title='Delay Across Airlines in 2015',
 ax.set_xticklabels(list(calendar.month_name), rotation=45)
 plt.legend(title='Airline Type', loc='upper right')
 plt.show()
+
+
+shape = gpd.read_file('data/tl_2017_us_state/tl_2017_us_state.shp')
+delay_state = delay_state[~delay_state['state'].isin(['AS','AK','HI','VI','PR','GU'])].reset_index()
+delay_state['average_delay_std'] = zscore(delay_state['average_delay'])
+shape = pd.merge(shape, delay_state, how='right',left_on='STUSPS', right_on='state')
+ax = shape.boundary.plot(figsize=(10, 5))
+shape.plot(ax=ax,column='average_delay_std', 
+           norm=colors.CenteredNorm(),
+           legend=True, 
+           cmap='coolwarm',
+           legend_kwds={'label':'Normalized Delay'})
+plt.show()
+
