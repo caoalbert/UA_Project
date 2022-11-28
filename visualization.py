@@ -55,7 +55,7 @@ ax.set_xticklabels(list(calendar.month_name), rotation=45)
 plt.legend(title='Airline Type', loc='upper right')
 plt.show()
 
-
+# Map1: delay by state
 shape = gpd.read_file('data/tl_2017_us_state/tl_2017_us_state.shp')
 delay_state = delay_state[~delay_state['state'].isin(['AS','AK','HI','VI','PR','GU'])].reset_index()
 delay_state['average_delay_std'] = zscore(delay_state['average_delay'])
